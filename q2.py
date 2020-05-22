@@ -4,6 +4,7 @@ from copy import deepcopy
 created = 0
 developed = 0
 
+
 class Board:
     def __init__(self, inputs: list, square_pos):
         self.row = len(inputs)
@@ -24,12 +25,34 @@ class Board:
                     my_dict[student[1]] = 1
             max_v = 0
             sum_v = 0
+            max_k = None
             for k, v in my_dict.items():
                 sum_v += v
                 if v > max_v:
                     max_v = v
-            result += sum_v - max_v
+                    max_k = k
+            last_h = 0
+            last_h_c = -1
+            for s in a_list:
+                if s == '#':
+                    continue
+                if s[1] == max_k:
+                    if s[0] > last_h:
+                        last_h_c += 1
+                    last_h = s[0]
+
+            result += sum_v - max_v + last_h_c
+            # print("kir : ", a_list)
+            # print("innnnnnnn : ", result, sum_v, max_v, last_h_c)
+        # print_list("asl : ", self.inputs)
+        # print(f'{result}')
         return result
+
+
+def print_list(quide, al):
+    print(quide)
+    for a in al:
+        print(a)
 
 
 class Node:
@@ -92,7 +115,7 @@ def a_star(node: Node):
     current_node: Node = min(frontier, key=lambda x: x.heuristic + x.G)
     while frontier:
         global developed
-        developed+=1
+        developed += 1
         if current_node.is_goal():
             path: List[Node] = [current_node]
             while current_node.parent:
@@ -105,15 +128,21 @@ def a_star(node: Node):
             current_node.produce_nexts()
             for child in current_node.nexts:
                 global created
-                created+=1
+                created += 1
                 flag = False
-                if not is_in_explored(a_node=child, explored=explored):
+                temp = None
+                if True:
                     for front in frontier:
                         if child.board.inputs != front.board.inputs or child.heuristic + child.G < front.heuristic + front.G:
+                            if child.board.inputs == front.board.inputs:
+                                temp = front
                             flag = True
                             break
-                    if flag:
+                    if flag or not len(frontier):
+                        if temp:
+                            frontier.remove(temp)
                         frontier.append(child)
+        current_node = min(frontier, key=lambda x: x.heuristic + x.G)
 
 
 if __name__ == '__main__':
@@ -132,12 +161,12 @@ if __name__ == '__main__':
         qu.append(nq1)
 
     my_node = Node(Board(qu, square_pos=sqr), 0)
-    frontier = a_star(my_node)
-    print(len(frontier) - 2)
-    last_sq = frontier[0].board.square_pos
+    frontier1 = a_star(my_node)
+    print(len(frontier1) - 1)
+    last_sq = frontier1[0].board.square_pos
     dirs = []
-    for i in range(len(frontier)):
-        direction = (frontier[i].board.square_pos[0] - last_sq[0], frontier[i].board.square_pos[1] - last_sq[1])
+    for i in range(len(frontier1)):
+        direction = (frontier1[i].board.square_pos[0] - last_sq[0], frontier1[i].board.square_pos[1] - last_sq[1])
         if direction == (0, 1):
             dirs.append('RIGHT')
         elif direction == (0, -1):
@@ -146,7 +175,7 @@ if __name__ == '__main__':
             dirs.append('DOWN')
         elif direction == (-1, 0):
             dirs.append("UP")
-        last_sq = (frontier[i].board.square_pos[0], frontier[i].board.square_pos[1])
+        last_sq = (frontier1[i].board.square_pos[0], frontier1[i].board.square_pos[1])
     for i in dirs:
         print(i)
     print("created nodes : ", created)
