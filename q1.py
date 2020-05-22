@@ -4,6 +4,7 @@ from copy import deepcopy
 created = 0
 developed = 0
 
+
 class Board:
     def __init__(self, inputs: list, square_pos):
         self.row = len(inputs)
@@ -28,7 +29,6 @@ class Node:
                     nq.pop(0)
             last_student = deepcopy(nq[0])
             for student in nq:
-                # print(student)
                 if student[1] != last_student[1] or student[0] > last_student[0]:
                     return False
                 last_student = deepcopy(student)
@@ -41,27 +41,16 @@ class Node:
             next_node_sq = (temp_sq[0] + adir[0], temp_sq[1] + adir[1])
             if self.board.row > next_node_sq[0] >= 0 and self.board.col > next_node_sq[1] >= 0:
                 new_input = []
-                # print_list("original board : ",self.board.inputs)
-                # new_input = list(self.board.inputs)
                 for a_q in self.board.inputs:
                     my_q = a_q.copy()
                     new_input.append(my_q)
-                # print_list("new input : ",new_input)
                 new_input[temp_sq[0]][temp_sq[1]] = new_input[next_node_sq[0]][next_node_sq[1]]
                 new_input[next_node_sq[0]][next_node_sq[1]] = '#'
                 next_node = Node(Board(new_input, next_node_sq))
                 self.nexts.append(next_node)
-                # break
 
 
-def is_in_explored(a_n: Node, lim, exp):
-    for hi in exp:
-        if hi[0].board.inputs == a_n.board.inputs and hi[1] > lim:
-            return True
-    return False
-
-
-def dls_rec(node: Node, limit, explored: List[Tuple[Node, int]], my_path: List[Node]):
+def dls_rec(node: Node, limit, my_path: List[Node]):
     if node.is_goal():
         my_path.append(node)
         return my_path
@@ -69,25 +58,22 @@ def dls_rec(node: Node, limit, explored: List[Tuple[Node, int]], my_path: List[N
         return None
     global developed
     global created
-    developed+=1
+    developed += 1
     node.produce_nexts()
     for a_nn in node.nexts:
-        created+=1
-        if not is_in_explored(a_nn, limit, explored):
-            explored.append((a_nn, limit))
-            result = dls_rec(a_nn, limit - 1, explored=explored, my_path=my_path)
-            if result is not None:
-                my_path.insert(0, a_nn)
-                return my_path
+        created += 1
+        result = dls_rec(a_nn, limit - 1, my_path=my_path)
+        if result is not None:
+            my_path.insert(0, a_nn)
+            return my_path
 
 
 def ids(start_node: Node):
     for l in range(20):
         front: List[Node] = []
-        explored: List[Tuple[Node, int]] = [(deepcopy(start_node), l)]
-        result = dls_rec(deepcopy(start_node), l, explored, front)
+        result = dls_rec(deepcopy(start_node), l, front)
         if result is not None and result is not False:
-            result.insert(0,start_node)
+            result.insert(0, start_node)
             return result
         print(f'No answer was found in {l}')
 
