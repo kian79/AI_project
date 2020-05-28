@@ -92,11 +92,17 @@ if __name__ == '__main__':
         q1 = list(input().split())
         nq1 = []
         for j in range(col):
-            if q1[j] != '#':
-                nq1.append((int(q1[j][:3]), q1[j][3:]))
-            else:
+            if q1[j] == '#':
                 sqr = (i, j)
                 nq1.append(q1[j])
+            else:
+                str_c=0
+                for c in range(len(q1[j])):
+                    if q1[j][c].isalpha():
+                        str_c = c
+                        break
+                nq1.append((int(q1[j][:str_c]), q1[j][str_c:]))
+
         qu.append(nq1)
 
     my_node = Node(Board(qu, square_pos=sqr))
