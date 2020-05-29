@@ -232,7 +232,7 @@ def is_in_explored(a_node: Node, explored: List[Node]):
     for exp in explored:
         if a_node.board.inputs == exp.board.inputs:
             return True
-        return False
+    return False
 
 
 def a_star(node: Node):
@@ -257,7 +257,7 @@ def a_star(node: Node):
             global created
             created += 1
             flag = False
-            if True:
+            if not is_in_explored(child,explored):
                 for front in frontier:
                     if child.board.inputs == front.board.inputs:
                         if child.heuristic + child.G >= front.heuristic+front.G:
