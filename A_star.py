@@ -112,10 +112,6 @@ class Board:
             print(a)
             print(my_arr)
             result += sum_v - max_v + last_h_c + a
-            # print("kir : ", a_list)
-            # print("innnnnnnn : ", result, sum_v, max_v, last_h_c)
-        # print_list("asl : ", self.inputs)
-        # print(f'{result}')
         return result
 
     def count_distance_from_goal(self):
